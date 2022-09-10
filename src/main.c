@@ -1,8 +1,7 @@
-/* Copyright 2022, Laboratorio de Microprocesadores
+/* Copyright 2022, EITI
  * Facultad de Ciencias Exactas y Tecnología
  * Universidad Nacional de Tucuman
- * http://www.microprocesadores.unt.edu.ar/
- * Copyright 2022, Esteban Volentini <evolentini@herrera.unt.edu.ar>
+ * Copyright 2022, Pablo Marcelo Nacusse <pablo.nacusse@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -134,8 +133,8 @@ int main(void) {
     Chip_GPIO_SetPinDIR(LPC_GPIO_PORT, LED_G_GPIO, LED_G_BIT, true);
 
     Chip_SCU_PinMuxSet(LED_B_PORT, LED_B_PIN, SCU_MODE_INBUFF_EN | SCU_MODE_INACT | LED_B_FUNC);
-    Chip_GPIO_SetPinState(LPC_GPIO_PORT, LED_B_GPIO, LED_B_BIT, false);
-    Chip_GPIO_SetPinDIR(LPC_GPIO_PORT, LED_B_GPIO, LED_B_BIT, true);
+    //Chip_GPIO_SetPinState(LPC_GPIO_PORT, LED_B_GPIO, LED_B_BIT, false);
+    //Chip_GPIO_SetPinDIR(LPC_GPIO_PORT, LED_B_GPIO, LED_B_BIT, true);
 
     /******************/
     Chip_SCU_PinMuxSet(LED_1_PORT, LED_1_PIN, SCU_MODE_INBUFF_EN | SCU_MODE_INACT | LED_1_FUNC);
@@ -164,6 +163,10 @@ int main(void) {
     Chip_GPIO_SetPinDIR(LPC_GPIO_PORT, TEC_4_GPIO, TEC_4_BIT, false);
 
     digital_output_t led_azul = DigitalOutputCreate(LED_B_GPIO, LED_B_BIT);
+    digital_output_t led_uno = DigitalOutputCreate(LED_1_GPIO, LED_1_BIT);
+    digital_output_t led_dos = DigitalOutputCreate(LED_2_GPIO, LED_2_BIT);
+    digital_output_t led_tres = DigitalOutputCreate(LED_3_GPIO, LED_3_BIT);
+
     while (true) {
         if (Chip_GPIO_ReadPortBit(LPC_GPIO_PORT, TEC_1_GPIO, TEC_1_BIT) == 0) {
             DigitalOutputActivate(led_azul);
@@ -175,21 +178,25 @@ int main(void) {
 
         current_state = (Chip_GPIO_ReadPortBit(LPC_GPIO_PORT, TEC_2_GPIO, TEC_2_BIT) == 0);
         if ((current_state) && (!last_state)) {
-            Chip_GPIO_SetPinToggle(LPC_GPIO_PORT, LED_1_GPIO, LED_1_BIT);
+            DigitalOutputToggle(led_uno);
+            //Chip_GPIO_SetPinToggle(LPC_GPIO_PORT, LED_1_GPIO, LED_1_BIT);
         }
         last_state = current_state;
 
         if (Chip_GPIO_ReadPortBit(LPC_GPIO_PORT, TEC_3_GPIO, TEC_3_BIT) == 0) {
-            Chip_GPIO_SetPinState(LPC_GPIO_PORT, LED_2_GPIO, LED_2_BIT, true);
+            DigitalOutputActivate(led_dos);
+            //Chip_GPIO_SetPinState(LPC_GPIO_PORT, LED_2_GPIO, LED_2_BIT, true);
         }
         if (Chip_GPIO_ReadPortBit(LPC_GPIO_PORT, TEC_4_GPIO, TEC_4_BIT) == 0) {
-            Chip_GPIO_SetPinState(LPC_GPIO_PORT, LED_2_GPIO, LED_2_BIT, false);
+            DigitalOutputDeactivate(led_dos);
+            //Chip_GPIO_SetPinState(LPC_GPIO_PORT, LED_2_GPIO, LED_2_BIT, false);
         }
 
         divisor++;
         if (divisor == 5) {
             divisor = 0;
-            Chip_GPIO_SetPinToggle(LPC_GPIO_PORT, LED_3_GPIO, LED_3_BIT);
+            DigitalOutputToggle(led_tres);
+            //Chip_GPIO_SetPinToggle(LPC_GPIO_PORT, LED_3_GPIO, LED_3_BIT);
         }
 
         for (int index = 0; index < 100; index++) {

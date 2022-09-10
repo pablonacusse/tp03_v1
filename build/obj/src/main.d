@@ -60,4 +60,5 @@ build/obj/src/main.o: /home/pablo/eiti/2022/embebidos/tp/tp03/src/main.c \
  /home/pablo/eiti/2022/embebidos/tp/proyectos/muju/externals/base/soc/lpc43xx/lpc_chip_43xx/inc/romapi_18xx_43xx.h \
  /home/pablo/eiti/2022/embebidos/tp/proyectos/muju/externals/base/soc/lpc43xx/lpc_chip_43xx/inc/iap_18xx_43xx.h \
  /home/pablo/eiti/2022/embebidos/tp/proyectos/muju/externals/base/soc/lpc43xx/lpc_chip_43xx/inc/error.h \
- /home/pablo/eiti/2022/embebidos/tp/proyectos/muju/externals/base/soc/lpc43xx/lpc_chip_43xx/inc/i2cm_18xx_43xx.h
+ /home/pablo/eiti/2022/embebidos/tp/proyectos/muju/externals/base/soc/lpc43xx/lpc_chip_43xx/inc/i2cm_18xx_43xx.h \
+ /home/pablo/eiti/2022/embebidos/tp/tp03/inc/digital.h

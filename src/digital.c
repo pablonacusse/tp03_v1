@@ -107,7 +107,7 @@ digital_output_t DigitalOutputCreate(uint8_t gpio, uint8_t bit)
         output->gpio = gpio;
         output->bit = bit;
         Chip_GPIO_SetPinState(LPC_GPIO_PORT, output->gpio, output->bit, false);
-        Chip_GPIO_SetPinDir(LPC_GPIO_PORT, output->gpio, output->nbit, true);
+        Chip_GPIO_SetPinDIR(LPC_GPIO_PORT, output->gpio, output->bit, true);
     }
 
     return output;
@@ -115,19 +115,16 @@ digital_output_t DigitalOutputCreate(uint8_t gpio, uint8_t bit)
 
 void DigitalOutputActivate(digital_output_t output){
     Chip_GPIO_SetPinState(LPC_GPIO_PORT, output->gpio, output->bit, true);
-
-    if (output) {
-
-    }
 }
 
-void DigitalOutputDeactivate(digital_output_t output);{
-
+void DigitalOutputDeactivate(digital_output_t output){
+    Chip_GPIO_SetPinState(LPC_GPIO_PORT, output->gpio, output->bit, false);
 }
 
 
-void DigitalOutputToggle(digital_output_t output);{
-
+void DigitalOutputToggle(digital_output_t output){
+    Chip_GPIO_SetPinToggle(LPC_GPIO_PORT, output->gpio, output->bit);
+    //Chip_GPIO_SetPinToggle(LPC_GPIO_PORT, LED_3_GPIO, LED_3_BIT)
 }
 
 /* === Ciere de documentacion ============================================== */
