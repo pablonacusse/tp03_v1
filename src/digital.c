@@ -1,8 +1,6 @@
-/* Copyright 2023, Laboratorio de Microprocesadores
- * Facultad de Ciencias Exactas y Tecnología
+/* Copyright 2022, 
  * Universidad Nacional de Tucuman
- * http://www.microprocesadores.unt.edu.ar/
- * Copyright 2022, Esteban Volentini <evolentini@herrera.unt.edu.ar>
+ * Copyright 2022, Pablo Nacusse <pablo.nacusse@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,9 +41,9 @@
  **
  ** | RV | YYYY.MM.DD | Autor       | Descripción de los cambios              |
  ** |----|------------|-------------|-----------------------------------------|
- ** |  1 | 2022.08.27 | evolentini  | Version inicial del archivo             |
+ ** |  1 | 2022.08.27 | jcalvo      | Version inicial del archivo             |
  **
- ** @defgroup plantilla Plantilals de Archivos
+ ** @defgroup plantilla Plantillas de Archivos
  ** @brief Plantillas de archivos normalizadas
  ** @{
  */
@@ -61,8 +59,13 @@
     #define OUTPUT_INSTANCES    4
 #endif
 
-/* === Declaraciones de tipos de datos privados ============================ */
+#ifndef INPUT_INSTANCES
+    #define INPUT_INSTANCES    4
+#endif
 
+/* === Declaraciones de tipos de datos privados ============================ */
+typedef struct digital_output_s * digital_output_t;
+typedef struct digital_input_s * digital_input_t;
 struct digital_output_s 
 {
     uint8_t gpio;
@@ -70,9 +73,17 @@ struct digital_output_s
     bool allocated;
 };
 
+struct digital_input_s
+{
+    uint8_t gpio;
+    uint8_t bit;
+    bool allocated;
+    bool last_state;
+};
 /* === Definiciones de variables privadas ================================== */
 
 static struct digital_output_s instances[OUTPUT_INSTANCES] = {0};
+static struct digital_input_s in_instances[INPUT_INSTANCES] = {0};
 
 /* === Definiciones de variables publicas ================================== */
 
@@ -96,6 +107,22 @@ digital_output_t DigitalOutputAllocate(void)
     }
     return output;
 }
+
+digital_input_t DigitalInputAllocate(void)
+{
+    digital_input_t input = NULL;
+
+    for (int index = 0; index < INPUT_INSTANCES; index++)
+    {
+        if (in_instances[index].allocated == false)
+        {
+            in_instances[index].allocated = true;
+            input = &in_instances[index];
+            break;
+        }
+    }
+    return input;
+}
 /* === Definiciones de funciones publicas ================================== */
 
 digital_output_t DigitalOutputCreate(uint8_t gpio, uint8_t bit)
@@ -106,6 +133,8 @@ digital_output_t DigitalOutputCreate(uint8_t gpio, uint8_t bit)
     {
         output->gpio = gpio;
         output->bit = bit;
+    //Chip_GPIO_SetPinState(LPC_GPIO_PORT, LED_B_GPIO, LED_B_BIT, false);
+    //Chip_GPIO_SetPinDIR(LPC_GPIO_PORT, LED_B_GPIO, LED_B_BIT, true);        
         Chip_GPIO_SetPinState(LPC_GPIO_PORT, output->gpio, output->bit, false);
         Chip_GPIO_SetPinDIR(LPC_GPIO_PORT, output->gpio, output->bit, true);
     }
@@ -114,6 +143,7 @@ digital_output_t DigitalOutputCreate(uint8_t gpio, uint8_t bit)
 }
 
 void DigitalOutputActivate(digital_output_t output){
+    //Chip_GPIO_SetPinState(LPC_GPIO_PORT, LED_B_GPIO, LED_B_BIT, true);
     Chip_GPIO_SetPinState(LPC_GPIO_PORT, output->gpio, output->bit, true);
 }
 
@@ -125,6 +155,50 @@ void DigitalOutputDeactivate(digital_output_t output){
 void DigitalOutputToggle(digital_output_t output){
     Chip_GPIO_SetPinToggle(LPC_GPIO_PORT, output->gpio, output->bit);
     //Chip_GPIO_SetPinToggle(LPC_GPIO_PORT, LED_3_GPIO, LED_3_BIT)
+}
+
+
+digital_input_t DigitalInputCreate(uint8_t gpio, uint8_t bit)
+{
+    digital_input_t input = DigitalInputAllocate();
+
+    if (input)
+    {
+        input->gpio = gpio;
+        input->bit = bit;
+        Chip_GPIO_SetPinDIR(LPC_GPIO_PORT, input->gpio, input->bit, false);
+    }
+
+    return input;
+}
+
+bool DigitalInputGetState(digital_input_t input){
+    bool estado = false;
+    if (input){
+        estado = (Chip_GPIO_ReadPortBit(LPC_GPIO_PORT, input->gpio, input->bit) == 0);
+    }
+    return estado;
+}
+
+bool DigitalInputHasChanged(digital_input_t input){
+    bool estado = DigitalInputGetState(input);
+    bool resultado = estado != input->last_state;
+    input->last_state = estado;
+    return resultado;
+}
+
+bool DigitalInputHasActivated(digital_input_t input){
+    bool estado = DigitalInputGetState(input);
+    bool resultado = estado && !input->last_state;
+    input->last_state = estado;
+    return resultado;
+}
+
+bool DigitalInputHasDeactivated(digital_input_t input){
+    bool estado = DigitalInputGetState(input);
+    bool resultado = !estado && !input->last_state;
+    input->last_state = estado;
+    return resultado;
 }
 
 /* === Ciere de documentacion ============================================== */
