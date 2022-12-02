@@ -39,9 +39,6 @@
  ** de Tiempo Real dictadas en de la Especialización en Integración de
  ** Sistemas Informaticos de la Univesidad Nacional de Tucumán
  **
- ** | RV | YYYY.MM.DD | Autor       | Descripción de los cambios              |
- ** |----|------------|-------------|-----------------------------------------|
- ** |  1 | 2022.08.27 | jcalvo      | Version inicial del archivo             |
  **
  ** @defgroup plantilla Plantillas de Archivos
  ** @brief Plantillas de archivos normalizadas

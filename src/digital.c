@@ -39,10 +39,6 @@
  ** de Tiempo Real dictadas en de la Especialización en Integración de
  ** Sistemas Informaticos de la Univesidad Nacional de Tucumán
  **
- ** | RV | YYYY.MM.DD | Autor       | Descripción de los cambios              |
- ** |----|------------|-------------|-----------------------------------------|
- ** |  1 | 2022.08.27 | jcalvo      | Version inicial del archivo             |
- **
  ** @defgroup plantilla Plantillas de Archivos
  ** @brief Plantillas de archivos normalizadas
  ** @{
@@ -79,11 +75,13 @@ struct digital_input_s
     uint8_t bit;
     bool allocated;
     bool last_state;
+    bool inverted;
 };
 /* === Definiciones de variables privadas ================================== */
 
 static struct digital_output_s instances[OUTPUT_INSTANCES] = {0};
 static struct digital_input_s in_instances[INPUT_INSTANCES] = {0};
+bool estado_actual;
 
 /* === Definiciones de variables publicas ================================== */
 
@@ -117,6 +115,7 @@ digital_input_t DigitalInputAllocate(void)
         if (in_instances[index].allocated == false)
         {
             in_instances[index].allocated = true;
+            in_instances[index].last_state = true;
             input = &in_instances[index];
             break;
         }
@@ -124,6 +123,8 @@ digital_input_t DigitalInputAllocate(void)
     return input;
 }
 /* === Definiciones de funciones publicas ================================== */
+
+// ------------------- OUTPUT -------------------
 
 digital_output_t DigitalOutputCreate(uint8_t gpio, uint8_t bit)
 {
@@ -144,19 +145,26 @@ digital_output_t DigitalOutputCreate(uint8_t gpio, uint8_t bit)
 
 void DigitalOutputActivate(digital_output_t output){
     //Chip_GPIO_SetPinState(LPC_GPIO_PORT, LED_B_GPIO, LED_B_BIT, true);
-    Chip_GPIO_SetPinState(LPC_GPIO_PORT, output->gpio, output->bit, true);
+    if (output) {
+        Chip_GPIO_SetPinState(LPC_GPIO_PORT, output->gpio, output->bit, true);
+    }
 }
 
 void DigitalOutputDeactivate(digital_output_t output){
-    Chip_GPIO_SetPinState(LPC_GPIO_PORT, output->gpio, output->bit, false);
+    if (output){
+        Chip_GPIO_SetPinState(LPC_GPIO_PORT, output->gpio, output->bit, false);
+    }
 }
 
 
 void DigitalOutputToggle(digital_output_t output){
-    Chip_GPIO_SetPinToggle(LPC_GPIO_PORT, output->gpio, output->bit);
+    if (output){
+        Chip_GPIO_SetPinToggle(LPC_GPIO_PORT, output->gpio, output->bit);
+    }
     //Chip_GPIO_SetPinToggle(LPC_GPIO_PORT, LED_3_GPIO, LED_3_BIT)
 }
 
+// ----------------- INPUT ---------------------------
 
 digital_input_t DigitalInputCreate(uint8_t gpio, uint8_t bit)
 {
